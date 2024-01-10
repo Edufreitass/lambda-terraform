@@ -15,7 +15,7 @@ provider "aws" {
 data "archive_file" "lambda" {
   type        = "zip"
   source_dir  = "..\\app"
-  output_path = "${var.lambda_function_name}.zip"
+  output_path = "zip\\${var.lambda_function_name}.zip"
 }
 
 resource "aws_lambda_function" "test_lambda" {
@@ -32,13 +32,14 @@ resource "aws_lambda_function" "test_lambda" {
   depends_on = [
     aws_iam_role_policy_attachment.lambda_logs,
     aws_cloudwatch_log_group.example,
+    aws_lambda_layer_version.my_layer
   ]
 }
 
 resource "aws_lambda_layer_version" "my_layer" {
   layer_name          = "my_layer"
   description         = "My Lambda Layer"
-  filename            = "${path.module}/lambda_layer.zip"
+  filename            = "zip\\lambda_layer.zip"
   compatible_runtimes = [var.lambda_runtime]
 }
 

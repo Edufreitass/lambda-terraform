@@ -1,38 +1,41 @@
 #!/bin/bash
 
 # Nome do diretório temporário
-temp_dir="temp"
-
+temp_dir="packages"
+# Nome do diretório de dependências
+depend_dir="python"
 # Nome do arquivo resources de saída
 output_zip="lambda_layer.zip"
+# Caminho do arquivo requirements.txt
+requirements_path="../../../../app/requirements.txt"
+# Caminho do arquivo zip
+zip_path="../../zip/"
 
-echo "Criando diretório temporário..."
-# Criar diretório temporário
+echo "### Iniciando script ###"
+echo "Criando diretório '$temp_dir'"
 mkdir "$temp_dir"
-
-echo "Instalando python3.10-venv"
-apt install python3.10-venv
-
-echo "Instalando dependências em um ambiente virtual temporário..."
-# Instalar as dependências em um ambiente virtual temporário
-python3 -m venv "$temp_dir/.venv"
-source "$temp_dir/.venv/bin/activate"
-pip install -q -r requirements.txt
-
-echo "Copiando dependências para o diretório temporário..."
-# Copiar as dependências para o diretório temporário
-cp -r "$temp_dir/.venv/lib/python3.*/site-packages" "$temp_dir"
-
-echo "Desativando o ambiente virtual..."
-# Desativar o ambiente virtual
+echo "Entrando no diretório '$temp_dir'"
+cd "$temp_dir"
+echo "Criando ambiente virtual 'venv'"
+python3 -m venv venv
+echo "Ativando ambiente virtual"
+source venv/bin/activate
+echo "Criando diretório '$depend_dir'"
+mkdir "$depend_dir"
+echo "Entrando no diretório '$depend_dir'"
+cd "$depend_dir"
+echo "Executando 'pip install..' no arquivo 'requirements.txt'"
+pip install -r "$requirements_path" -t .
+echo "Removendo arquivos com extensão .dist-info"
+rm -rf *dist-info
+echo "Saindo do diretório '$depend_dir'"
+cd ..
+echo "Desativando ambiente virtual"
 deactivate
-
-echo "Criando o arquivo zip..."
-# Criar o arquivo resources
-resources -r "$output_zip" "$temp_dir"
-
-echo "Removendo o diretório temporário..."
-# Remover o diretório temporário
+echo "Criando arquivo zip"
+zip -r "$zip_path""$output_zip" "$depend_dir"
+echo "Arquivo zip '$output_zip' criado com sucesso"
+cd ..
+echo "Removendo diretório '$depend_dir'"
 rm -rf "$temp_dir"
-
-echo "Arquivo zip '$output_zip' criado com sucesso!"
+echo "### Encerrando script ###"
