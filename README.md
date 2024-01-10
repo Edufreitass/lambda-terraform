@@ -9,7 +9,7 @@ A base project to deploy an AWS Lambda (with layer and cloudwatch logs) on AWS u
 
 ## Extra
 
-If you want to zip python dependencies manually, follow this steps:
+If you want to package python dependencies manually, follow these steps:
 
 ````shell
 mkdir packages
